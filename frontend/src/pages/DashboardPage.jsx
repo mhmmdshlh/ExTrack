@@ -56,11 +56,24 @@ export default function DashboardPage() {
   const updateExpenseMutation = useUpdateExpense();
   const createCategoryMutation = useCreateCategory();
 
+  const formatNow = () => {
+    const d = new Date();
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return {
+      date: `${dd}/${mm}/${yyyy}`,
+      time: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
+    };
+  };
+
   const [showForm, setShowForm] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formAmount, setFormAmount] = useState('');
   const [formCategory, setFormCategory] = useState('');
   const [formNotes, setFormNotes] = useState('');
+  const [formDate, setFormDate] = useState(formatNow().date);
+  const [formTime, setFormTime] = useState(formatNow().time);
   const [newCategoryConfirm, setNewCategoryConfirm] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [toast, setToast] = useState('');
@@ -145,16 +158,23 @@ export default function DashboardPage() {
 
     const cat = await findOrCreateCategory(formCategory);
     if (cat) {
+      const [dd, mm, yyyy] = formDate.split('/');
+      const created_at = new Date(`${yyyy}-${mm}-${dd}T${formTime}:00`).toISOString();
+
       await createExpenseMutation.mutateAsync({
         title: formTitle,
         amount: Number(formAmount),
         category_id: cat.id,
         notes: formNotes || null,
+        created_at,
       });
+      const now = formatNow();
       setFormTitle('');
       setFormAmount('');
       setFormCategory('');
       setFormNotes('');
+      setFormDate(now.date);
+      setFormTime(now.time);
       setShowForm(false);
     }
   };
@@ -334,6 +354,21 @@ export default function DashboardPage() {
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
               rows={2}
             />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={formDate}
+                onChange={(e) => setFormDate(e.target.value)}
+                placeholder="dd/mm/yyyy"
+                className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+              />
+              <input
+                type="time"
+                value={formTime}
+                onChange={(e) => setFormTime(e.target.value)}
+                className="w-32 rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+              />
+            </div>
             <div className="flex gap-2">
               <button
                 type="submit"

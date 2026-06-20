@@ -20,6 +20,15 @@ export function parseCLIInput(input, template) {
 
   let dateInput = '';
   let timeInput = '';
+  let noteInput = '';
+
+  // --note consumes everything after it; extract first so other flags still work
+  const noteIdx = allParts.indexOf('--note');
+  if (noteIdx !== -1 && noteIdx + 1 < allParts.length) {
+    noteInput = allParts.slice(noteIdx + 1).join(' ');
+    allParts.splice(noteIdx);
+  }
+
   const inputParts = [];
   for (let i = 0; i < allParts.length; i++) {
     if (allParts[i] === '--date' && i + 1 < allParts.length) {
@@ -67,6 +76,7 @@ export function parseCLIInput(input, template) {
 
   result.dateInput = dateInput;
   result.timeInput = timeInput;
+  if (noteInput) result.notes = noteInput;
   return result;
 }
 

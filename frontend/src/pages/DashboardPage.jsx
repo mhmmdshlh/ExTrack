@@ -106,14 +106,28 @@ export default function DashboardPage() {
       return;
     }
     if (!data.category_id) {
+      setToast('Kategori diperlukan. Contoh: 6000 kopi minuman');
       return;
     }
     try {
+      let created_at;
+      if (data.dateInput || data.timeInput) {
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yyyy = now.getFullYear();
+        const [d, m, y] = (data.dateInput || `${dd}/${mm}/${yyyy}`).split('/');
+        const [h, mi = '00'] = (data.timeInput || '00:00').split(':');
+        const hh = h.padStart(2, '0');
+        created_at = new Date(`${y}-${m}-${d}T${hh}:${mi.padStart(2, '0')}:00`).toISOString();
+      }
+
       await createExpenseMutation.mutateAsync({
         title: data.title,
         amount: data.amount,
         category_id: data.category_id,
         notes: data.notes || null,
+        ...(created_at && { created_at }),
       });
       setToast('Pengeluaran berhasil dicatat');
     } catch {

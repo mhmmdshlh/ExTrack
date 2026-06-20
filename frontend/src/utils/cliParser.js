@@ -11,12 +11,26 @@ const TEMPLATE_ORDER = {
 };
 
 export function parseCLIInput(input, template) {
-  const result = { title: '', amount: 0, category: '', notes: '' };
+  const result = { title: '', amount: 0, category: '', notes: '', dateInput: '', timeInput: '' };
 
   if (!input || !template) return result;
 
   const templateParts = template.split(/\s+/);
-  const inputParts = input.split(/\s+/);
+  const allParts = input.trim().split(/\s+/);
+
+  let dateInput = '';
+  let timeInput = '';
+  const inputParts = [];
+  for (let i = 0; i < allParts.length; i++) {
+    if (allParts[i] === '--date' && i + 1 < allParts.length) {
+      dateInput = allParts[++i];
+    } else if (allParts[i] === '--time' && i + 1 < allParts.length) {
+      timeInput = allParts[++i];
+    } else {
+      inputParts.push(allParts[i]);
+    }
+  }
+
   const fieldNames = templateParts.map(tpl => TEMPLATE_ORDER[tpl] || null);
 
   let inputIdx = 0;
@@ -51,6 +65,8 @@ export function parseCLIInput(input, template) {
     }
   }
 
+  result.dateInput = dateInput;
+  result.timeInput = timeInput;
   return result;
 }
 

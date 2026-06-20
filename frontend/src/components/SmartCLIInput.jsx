@@ -29,6 +29,8 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
       categoryInput: parsed.category,
       category_id: matchedCategory?.id || null,
       category_name: matchedCategory?.name || toTitleCase(parsed.category) || 'Lainnya',
+      dateInput: parsed.dateInput,
+      timeInput: parsed.timeInput,
     });
 
     setInput('');
@@ -61,6 +63,11 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
           {preview.category && (
             <p className="mt-1 text-xs text-muted-foreground">
               Kategori: {toTitleCase(preview.category)}
+            </p>
+          )}
+          {(preview.dateInput || preview.timeInput) && (
+            <p className="text-xs text-muted-foreground">
+              Waktu: {preview.dateInput || '(hari ini)'} {preview.timeInput || ''}
             </p>
           )}
         </div>

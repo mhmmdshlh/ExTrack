@@ -4,6 +4,9 @@ import { formatRupiah } from '../utils/format.js';
 import { Send } from 'lucide-react';
 
 export default function SmartCLIInput({ template, categories, onSubmit }) {
+  const toTitleCase = (str) =>
+    str ? str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : '';
+
   const [input, setInput] = useState('');
   const preview = previewFromCLI(input, template);
   const placeholder = getCLIPlaceholder(template);
@@ -25,7 +28,7 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
       amount: parsed.amount,
       categoryInput: parsed.category,
       category_id: matchedCategory?.id || null,
-      category_name: matchedCategory?.name || parsed.category || 'Lainnya',
+      category_name: matchedCategory?.name || toTitleCase(parsed.category) || 'Lainnya',
     });
 
     setInput('');
@@ -57,7 +60,7 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
           </div>
           {preview.category && (
             <p className="mt-1 text-xs text-muted-foreground">
-              Kategori: {preview.category}
+              Kategori: {toTitleCase(preview.category)}
             </p>
           )}
         </div>

@@ -4,7 +4,7 @@ export function formatRupiah(amount) {
     currency: 'IDR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(amount).replace(/\s/g, '');
 }
 
 export function formatDate(dateStr) {

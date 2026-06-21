@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import useAuthStore from '../store/authStore.js';
 import { useSettings, useUpdateSettings } from '../hooks/useSettings.js';
-import { useCategories, useUpdateCategory, useDeleteCategory } from '../hooks/useCategories.js';
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../hooks/useCategories.js';
 import { useNavigate } from 'react-router-dom';
 import ConfirmModal from '../components/ConfirmModal.jsx';
 import Toast from '../components/Toast.jsx';
@@ -30,6 +30,7 @@ export default function SettingsPage() {
   const { data: settings } = useSettings();
   const { data: categories = [] } = useCategories();
   const updateSettingsMutation = useUpdateSettings();
+  const createCategoryMutation = useCreateCategory();
   const updateCategoryMutation = useUpdateCategory();
   const deleteCategoryMutation = useDeleteCategory();
   const navigate = useNavigate();
@@ -38,6 +39,8 @@ export default function SettingsPage() {
   const [quickButtons, setQuickButtons] = useState([]);
   const [editingCat, setEditingCat] = useState(null);
   const [editCatName, setEditCatName] = useState('');
+  const [showNewCat, setShowNewCat] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
   const [deleteCatConfirm, setDeleteCatConfirm] = useState(null);
   const [toast, setToast] = useState('');
   const [darkMode, setDarkMode] = useState(() => {
@@ -103,6 +106,14 @@ export default function SettingsPage() {
   };
 
   const customCategories = categories?.filter((c) => c.user_id) || [];
+
+  const handleCreateCategory = async () => {
+    if (!newCatName.trim()) return;
+    await createCategoryMutation.mutateAsync(newCatName.trim());
+    setShowNewCat(false);
+    setNewCatName('');
+    setToast('Kategori berhasil dibuat');
+  };
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-24 pt-4 lg:pb-6">
@@ -228,9 +239,48 @@ export default function SettingsPage() {
       </div>
 
       <div className="mb-6 space-y-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold">
-          Kategori Custom
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-sm font-semibold">
+            Kategori Custom
+          </h2>
+          <button
+            onClick={() => setShowNewCat(true)}
+            className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+          >
+            <Plus size={14} />
+            Tambah
+          </button>
+        </div>
+
+        {showNewCat && (
+          <div className="flex items-center gap-2 rounded-xl border bg-card p-3">
+            <input
+              type="text"
+              value={newCatName}
+              onChange={(e) => setNewCatName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCreateCategory()}
+              placeholder="Nama kategori"
+              className="flex-1 rounded-md border bg-background px-2 py-1 text-sm outline-none"
+              autoFocus
+            />
+            <button
+              onClick={handleCreateCategory}
+              className="rounded p-1 text-green-600 hover:bg-accent"
+            >
+              <Check size={14} />
+            </button>
+            <button
+              onClick={() => {
+                setShowNewCat(false);
+                setNewCatName('');
+              }}
+              className="rounded p-1 text-muted-foreground hover:bg-accent"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
         {customCategories.length === 0 ? (
           <p className="text-sm text-muted-foreground">Belum ada kategori custom</p>
         ) : (

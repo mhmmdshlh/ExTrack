@@ -95,7 +95,7 @@ export default function SettingsPage() {
 
   const addQuickButton = () => {
     if (quickButtons.length >= 6) return;
-    setQuickButtons([...quickButtons, { label: '', amount: '', category: '' }]);
+    setQuickButtons([...quickButtons, { label: '', amount: '', category: 'Lain-lain' }]);
   };
 
   const removeQuickButton = (idx) => {
@@ -208,13 +208,15 @@ export default function SettingsPage() {
               placeholder="Rp"
               className="w-20 rounded-md border bg-background px-2 py-1 text-sm text-right outline-none"
             />
-            <input
-              type="text"
+            <select
               value={btn.category}
               onChange={(e) => updateQuickButton(idx, 'category', e.target.value)}
-              placeholder="Kategori"
               className="w-24 rounded-md border bg-background px-2 py-1 text-sm outline-none"
-            />
+            >
+              {categories?.map((cat) => (
+                <option key={cat.id} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
             <button
               onClick={() => removeQuickButton(idx)}
               className="rounded p-1 text-destructive hover:bg-accent"

@@ -75,6 +75,7 @@ export default function DashboardPage() {
   const [formDate, setFormDate] = useState(formatNow().date);
   const [formTime, setFormTime] = useState(formatNow().time);
   const [newCategoryConfirm, setNewCategoryConfirm] = useState(null);
+  const [pendingQuickBtn, setPendingQuickBtn] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [toast, setToast] = useState('');
 
@@ -156,14 +157,29 @@ export default function DashboardPage() {
 
   const handleQuickButton = async (config) => {
     if (!config.category) return;
-    const cat = await findOrCreateCategory(config.category);
+    const cat = findCategoryByName(categories, config.category);
     if (cat) {
       await createExpenseMutation.mutateAsync({
         title: config.label,
         amount: Number(config.amount),
         category_id: cat.id,
       });
+    } else {
+      setPendingQuickBtn(config);
     }
+  };
+
+  const handleConfirmQuickCategory = async () => {
+    if (!pendingQuickBtn) return;
+    const cat = await findOrCreateCategory(pendingQuickBtn.category);
+    if (cat) {
+      await createExpenseMutation.mutateAsync({
+        title: pendingQuickBtn.label,
+        amount: Number(pendingQuickBtn.amount),
+        category_id: cat.id,
+      });
+    }
+    setPendingQuickBtn(null);
   };
 
   const handleFormSubmit = async (e) => {
@@ -420,6 +436,15 @@ export default function DashboardPage() {
         confirmLabel="Buat & Simpan"
         onConfirm={handleConfirmCategory}
         onCancel={() => setNewCategoryConfirm(null)}
+      />
+
+      <ConfirmModal
+        open={!!pendingQuickBtn}
+        title="Kategori Baru"
+        message={`Kategori "${pendingQuickBtn?.category}" belum ada. Buat sekarang?`}
+        confirmLabel="Buat & Simpan"
+        onConfirm={handleConfirmQuickCategory}
+        onCancel={() => setPendingQuickBtn(null)}
       />
 
       <ConfirmModal

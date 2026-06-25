@@ -10,6 +10,17 @@ import * as XLSX from 'xlsx';
 
 const PAGE_SIZE = 20;
 
+const SORT_OPTIONS = [
+  { label: 'Terbaru', sortBy: 'date', sortOrder: 'desc' },
+  { label: 'Terlama', sortBy: 'date', sortOrder: 'asc' },
+  { label: 'Tertinggi', sortBy: 'amount', sortOrder: 'desc' },
+  { label: 'Terendah', sortBy: 'amount', sortOrder: 'asc' },
+  { label: 'A-Z', sortBy: 'title', sortOrder: 'asc' },
+  { label: 'Z-A', sortBy: 'title', sortOrder: 'desc' },
+  { label: 'A-Z Kategori', sortBy: 'category', sortOrder: 'asc' },
+  { label: 'Z-A Kategori', sortBy: 'category', sortOrder: 'desc' },
+];
+
 export default function HistoryPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -17,6 +28,7 @@ export default function HistoryPage() {
   const [timeFilter, setTimeFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [sortOption, setSortOption] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const exportMenuRef = useRef(null);
 
@@ -44,8 +56,11 @@ export default function HistoryPage() {
     } else if (timeFilter === 'year') {
       p.startDate = getStartOfYear().toISOString();
     }
+    const opt = SORT_OPTIONS[sortOption];
+    p.sortBy = opt.sortBy;
+    p.sortOrder = opt.sortOrder;
     return p;
-  }, [debouncedSearch, categoryFilter, timeFilter]);
+  }, [debouncedSearch, categoryFilter, timeFilter, sortOption]);
 
   const {
     data,
@@ -230,6 +245,15 @@ export default function HistoryPage() {
             <option value="">Semua Kategori</option>
             {categories?.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(Number(e.target.value))}
+            className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
+          >
+            {SORT_OPTIONS.map((opt, i) => (
+              <option key={i} value={i}>{opt.label}</option>
             ))}
           </select>
         </div>

@@ -8,7 +8,7 @@ router.use(auth);
 
 router.get('/', async (req, res) => {
   try {
-    const { startDate, endDate, categoryId, search } = req.query;
+    const { startDate, endDate, categoryId, search, sortBy, sortOrder } = req.query;
     const limit = parseInt(req.query.limit) || 0;
     const offset = parseInt(req.query.offset) || 0;
 
@@ -39,7 +39,15 @@ router.get('/', async (req, res) => {
       params.push(`%${search}%`, `%${search}%`);
     }
 
-    queryText += ' ORDER BY e.created_at DESC';
+    const SORT_MAP = {
+      date: 'e.created_at',
+      amount: 'e.amount',
+      title: 'e.title',
+      category: 'c.name',
+    };
+    const col = SORT_MAP[sortBy] || 'e.created_at';
+    const dir = sortOrder === 'asc' ? 'ASC' : 'DESC';
+    queryText += ` ORDER BY ${col} ${dir}`;
 
     if (limit > 0) {
       queryText += ` LIMIT $${idx++}`;

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, Download, Filter } from 'lucide-react';
+import { Search, Download, Filter, FileDown } from 'lucide-react';
 import { useExpensesInfinite, useUpdateExpense, useDeleteExpense } from '../hooks/useExpenses.js';
 import { useCategories } from '../hooks/useCategories.js';
 import ExpenseList from '../components/ExpenseList.jsx';
 import ConfirmModal from '../components/ConfirmModal.jsx';
-import { formatDate, getStartOfYear } from '../utils/format.js';
+import { formatDate, formatRupiah, getStartOfYear } from '../utils/format.js';
 import * as expenseService from '../services/expenseService.js';
+import * as XLSX from 'xlsx';
 
 const PAGE_SIZE = 20;
 
@@ -15,7 +16,9 @@ export default function HistoryPage() {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [timeFilter, setTimeFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const exportMenuRef = useRef(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -69,32 +72,67 @@ export default function HistoryPage() {
     setDeleteConfirm(id);
   }, []);
 
-  const handleExportCSV = async () => {
+  const downloadBlob = (content, mimeType, ext) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `extrack-export-${Date.now()}.${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = async (format) => {
+    setShowExportMenu(false);
     try {
       const res = await expenseService.getExpenses(filterParams);
-      const rows = res.data.expenses.map((e) => [
-        `"${e.title}"`,
-        e.amount,
-        `"${e.category_name}"`,
-        `"${e.notes || ''}"`,
-        formatDate(e.created_at),
-      ]);
+      const rows = res.data.expenses;
 
-      const headers = ['Title', 'Amount', 'Category', 'Notes', 'Date'];
-      const csv = [headers.join(','), ...rows.join('\n')].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `extrack-export-${Date.now()}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      if (format === 'csv') {
+        const csvRows = rows.map((e) => [
+          `"${e.title}"`,
+          e.amount,
+          `"${e.category_name}"`,
+          `"${e.notes || ''}"`,
+          formatDate(e.created_at),
+        ]);
+        const headers = ['Title', 'Amount', 'Category', 'Notes', 'Date'];
+        const csv = [headers.join(','), ...csvRows.map(r => r.join(','))].join('\n');
+        downloadBlob(csv, 'text/csv;charset=utf-8;', 'csv');
+      } else if (format === 'txt') {
+        const txt = rows.map((e) =>
+          `Judul: ${e.title}\nJumlah: ${formatRupiah(e.amount)}\nKategori: ${e.category_name}\nTanggal: ${formatDate(e.created_at)}\n`
+        ).join('\n');
+        downloadBlob(txt, 'text/plain;charset=utf-8;', 'txt');
+      } else if (format === 'xlsx') {
+        const data = rows.map((e) => ({
+          Title: e.title,
+          Amount: e.amount,
+          Category: e.category_name,
+          Notes: e.notes || '',
+          Date: formatDate(e.created_at),
+        }));
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+        XLSX.writeFile(wb, `extrack-export-${Date.now()}.xlsx`);
+      }
     } catch {
       // export failed silently
     }
   };
 
   const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target)) {
+        setShowExportMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -124,12 +162,39 @@ export default function HistoryPage() {
           >
             <Filter size={18} />
           </button>
-          <button
-            onClick={handleExportCSV}
-            className="rounded-lg border bg-card p-2 text-muted-foreground hover:bg-accent"
-          >
-            <Download size={18} />
-          </button>
+          <div className="relative" ref={exportMenuRef}>
+            <button
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="rounded-lg border bg-card p-2 text-muted-foreground hover:bg-accent"
+            >
+              <Download size={18} />
+            </button>
+            {showExportMenu && (
+              <div className="absolute right-0 top-full z-50 mt-1 w-32 rounded-lg border bg-card py-1 shadow-lg">
+                <button
+                  onClick={() => handleExport('csv')}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
+                >
+                  <FileDown size={14} />
+                  CSV
+                </button>
+                <button
+                  onClick={() => handleExport('txt')}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
+                >
+                  <FileDown size={14} />
+                  TXT
+                </button>
+                <button
+                  onClick={() => handleExport('xlsx')}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
+                >
+                  <FileDown size={14} />
+                  XLSX
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

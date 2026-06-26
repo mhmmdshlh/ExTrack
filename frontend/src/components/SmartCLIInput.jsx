@@ -8,6 +8,7 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
     str ? str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : '';
 
   const [input, setInput] = useState('');
+  const [warning, setWarning] = useState('');
   const preview = previewFromCLI(input, template);
   const placeholder = getCLIPlaceholder(template);
 
@@ -16,7 +17,11 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
     if (!input.trim()) return;
 
     const parsed = previewFromCLI(input, template);
-    if (!parsed.amount || !parsed.title) return;
+    if (!parsed.amount || !parsed.title || !parsed.category) {
+      setWarning(`Gunakan format: ${placeholder}`);
+      return;
+    }
+    setWarning('');
 
     const matchedCategory = parsed.category
       ? categories?.find((c) => c.name.toLowerCase() === parsed.category.toLowerCase())
@@ -43,7 +48,7 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
         <input
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => { setInput(e.target.value); setWarning(''); }}
           placeholder={placeholder}
           className="w-full rounded-xl border bg-background px-4 py-3 pr-12 text-sm outline-none ring-ring focus:ring-2"
         />
@@ -55,7 +60,12 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
           <Send size={16} />
         </button>
       </div>
-      {preview.title && (
+      {warning && (
+        <div className="rounded-lg border bg-muted/50 p-3 text-sm">
+          <p className="text-xs text-destructive">{warning}</p>
+        </div>
+      )}
+      {!warning && preview.title && (
         <div className="rounded-lg border bg-muted/50 p-3 text-sm">
           <div className="flex justify-between">
             <span className="font-medium">{preview.title}</span>

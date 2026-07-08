@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { TrendingDown, Plus } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { useExpenses, useCreateExpense, useDeleteExpense, useUpdateExpense } from '../hooks/useExpenses.js';
+import { useExpenses, useExpensesSummary, useCreateExpense, useDeleteExpense, useUpdateExpense } from '../hooks/useExpenses.js';
 import { useCategories, useCreateCategory, findCategoryByName } from '../hooks/useCategories.js';
 import { useSettings } from '../hooks/useSettings.js';
 import { formatRupiah, getStartOfWeek, getStartOfMonth, getStartOfYear } from '../utils/format.js';
@@ -46,9 +46,9 @@ export default function DashboardPage() {
     else start = getStartOfMonth();
     return { startDate: start.toISOString() };
   }, [timeRange]);
-  const { data: expenseData, isLoading, isError, error: queryError } = useExpenses(params);
-  const expenses = useMemo(() => expenseData?.expenses || [], [expenseData]);
-  const total = useMemo(() => expenseData?.total || 0, [expenseData]);
+  const { data: summaryData, isLoading, isError, error: queryError } = useExpensesSummary(params);
+  const { data: recentData } = useExpenses({ ...params, limit: 5 });
+  const total = useMemo(() => summaryData?.total || 0, [summaryData]);
   const { data: categories = [] } = useCategories();
   const { data: settings } = useSettings();
   const createExpenseMutation = useCreateExpense();
@@ -209,16 +209,12 @@ export default function DashboardPage() {
     }
   };
 
-  const recentExpenses = useMemo(() => expenses.slice(0, 5), [expenses]);
+  const recentExpenses = useMemo(() => recentData?.expenses || [], [recentData]);
 
-  const chartData = useMemo(() => Object.values(
-    expenses.reduce((acc, e) => {
-      const name = e.category_name;
-      acc[name] = acc[name] || { name, value: 0 };
-      acc[name].value += Number(e.amount);
-      return acc;
-    }, {})
-  ).filter((d) => d.value > 0), [expenses]);
+  const chartData = useMemo(() => (summaryData?.categories || []).map((c) => ({
+    name: c.name,
+    value: Number(c.total),
+  })).filter((d) => d.value > 0), [summaryData]);
 
   const template = useMemo(() => settings?.cli_template || '{amount} {title} {category}', [settings]);
   const quickButtons = useMemo(() => settings?.quick_buttons || [], [settings]);

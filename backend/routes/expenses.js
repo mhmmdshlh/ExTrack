@@ -70,6 +70,44 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/summary', async (req, res) => {
+  try {
+    const { startDate, endDate, categoryId } = req.query;
+
+    let queryText = `
+      SELECT c.name, SUM(e.amount) as total
+      FROM expenses e
+      JOIN categories c ON e.category_id = c.id
+      WHERE e.user_id = $1
+    `;
+    const params = [req.user.id];
+    let idx = 2;
+
+    if (startDate) {
+      queryText += ` AND e.created_at >= $${idx++}`;
+      params.push(startDate);
+    }
+    if (endDate) {
+      queryText += ` AND e.created_at <= $${idx++}`;
+      params.push(endDate);
+    }
+    if (categoryId) {
+      queryText += ` AND e.category_id = $${idx++}`;
+      params.push(categoryId);
+    }
+
+    queryText += ' GROUP BY c.name ORDER BY total DESC';
+
+    const rows = await sql(queryText, params);
+    const grandTotal = rows.reduce((sum, r) => sum + Number(r.total), 0);
+
+    res.json({ categories: rows, total: grandTotal });
+  } catch (error) {
+    console.error('Get summary error:', error);
+    res.status(500).json({ error: 'Failed to fetch summary' });
+  }
+});
+
 router.post('/', async (req, res) => {
   try {
     const { title, amount, category_id, notes, created_at } = req.body;

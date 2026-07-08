@@ -46,6 +46,18 @@ export function useAllExpenses() {
   });
 }
 
+export function useExpensesSummary(params = {}) {
+  return useQuery({
+    queryKey: ['expenses', 'summary', params],
+    queryFn: ({ signal }) => expenseService.getExpensesSummary(params, signal),
+    select: (res) => ({
+      categories: res.data.categories,
+      total: res.data.total,
+    }),
+    staleTime: 30_000,
+  });
+}
+
 export function useCreateExpense() {
   const queryClient = useQueryClient();
   return useMutation({

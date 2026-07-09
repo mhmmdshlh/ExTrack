@@ -1,0 +1,153 @@
+{
+  "app": {
+    "name": "ExTrack",
+    "tagline": "Track your expenses easily"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Min. 6 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat password",
+    "login": "Login",
+    "register": "Register",
+    "loading": "Processing...",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "registerTitle": "Create Account",
+    "registerSubtitle": "Register to start tracking",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Your expense overview",
+    "total": "Total Expenses",
+    "perCategory": "Per Category",
+    "recent": "Recent Transactions",
+    "loading": "Loading data...",
+    "error": "Failed to load data",
+    "formTitle": "Expense Form",
+    "formButton": "Full Form",
+    "namePlaceholder": "Expense name",
+    "amountPlaceholder": "Amount (Rp)",
+    "categoryPlaceholder": "Category",
+    "notesPlaceholder": "Notes (optional)",
+    "datePlaceholder": "dd/mm/yyyy",
+    "save": "Save",
+    "cancel": "Cancel",
+    "expenseCreated": "Expense recorded successfully",
+    "expenseDeleted": "Expense deleted successfully",
+    "deleteConfirmTitle": "Delete Expense",
+    "deleteConfirmMessage": "Delete this expense?",
+    "categoryNeeded": "Category required. Example: 6000 kopi minuman",
+    "newCategoryTitle": "New Category",
+    "newCategoryMessage": "Category \"{{name}}\" doesn't exist. Create now?",
+    "confirmCreate": "Create & Save",
+    "timeOptions": {
+      "today": "Today",
+      "week": "This Week",
+      "month": "This Month",
+      "year": "This Year",
+      "all": "All"
+    }
+  },
+  "history": {
+    "title": "History",
+    "search": "Search expenses...",
+    "loadingMore": "Loading more...",
+    "allLoaded": "All data has been loaded",
+    "deleteConfirmTitle": "Delete Expense",
+    "deleteConfirmMessage": "Delete this expense?",
+    "timeOptions": {
+      "all": "All Time",
+      "today": "Today",
+      "week": "7 Days",
+      "month": "This Month",
+      "year": "This Year"
+    },
+    "categoryAll": "All Categories",
+    "sortOptions": [
+      "Newest",
+      "Oldest",
+      "Highest",
+      "Lowest",
+      "A-Z",
+      "Z-A",
+      "A-Z Category",
+      "Z-A Category"
+    ],
+    "export": {
+      "csv": "CSV",
+      "txt": "TXT",
+      "xlsx": "XLSX"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "accountSubtitle": "Your account",
+    "logout": "Logout",
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "language": "Language",
+    "cliTemplate": "Smart CLI Template",
+    "quickButtons": "Quick Buttons (max 6)",
+    "add": "Add",
+    "label": "Label",
+    "amount": "Rp",
+    "category": "Category",
+    "customCategories": "Custom Categories",
+    "noCustomCategories": "No custom categories yet",
+    "expense": "expense",
+    "expenses": "expenses",
+    "newCategoryPlaceholder": "Category name",
+    "categoryCreated": "Category created successfully",
+    "categoryUpdated": "Category updated successfully",
+    "categoryDeleted": "Category deleted successfully",
+    "deleteCategoryTitle": "Delete Category",
+    "deleteCategoryMessage": "Delete category \"{{name}}\"?",
+    "save": "Save Settings",
+    "saved": "Settings saved successfully",
+    "saveFailed": "Failed to save settings"
+  },
+  "cli": {
+    "formatWarning": "Use format: {{format}}",
+    "categoryLabel": "Category:",
+    "timeLabel": "Time:",
+    "today": "(today)",
+    "notesLabel": "Notes:"
+  },
+  "confirm": {
+    "yes": "Yes",
+    "cancel": "Cancel"
+  },
+  "export": {
+    "filename": "extrack-export-",
+    "csv": ".csv",
+    "xlsx": ".xlsx",
+    "csvHeaders": ["Title", "Amount", "Category", "Notes", "Date"],
+    "txtLabels": {
+      "title": "Title: ",
+      "amount": "Amount: ",
+      "category": "Category: ",
+      "date": "Date: "
+    },
+    "xlsxHeaders": ["Title", "Amount", "Category", "Notes", "Date"],
+    "sheetName": "Expenses"
+  },
+  "template": {
+    "option1": "{amount} {title} {category}",
+    "option2": "{category} {amount} {title}",
+    "option3": "{title} {amount} {category}"
+  },
+  "tooltip": {
+    "filter": "Filter",
+    "export": "Export"
+  }
+}

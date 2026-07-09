@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next';
+
 export default function ConfirmModal({ open, title, message, confirmLabel, onConfirm, onCancel }) {
+  const { t } = useTranslation();
   if (!open) return null;
 
   return (
@@ -11,13 +14,13 @@ export default function ConfirmModal({ open, title, message, confirmLabel, onCon
             onClick={onConfirm}
             className="flex-1 rounded-lg bg-primary py-2 text-sm font-medium text-primary-foreground"
           >
-            {confirmLabel || 'Ya'}
+            {confirmLabel || t('confirm.yes')}
           </button>
           <button
             onClick={onCancel}
             className="flex-1 rounded-lg border py-2 text-sm text-muted-foreground"
           >
-            Batal
+            {t('confirm.cancel')}
           </button>
         </div>
       </div>

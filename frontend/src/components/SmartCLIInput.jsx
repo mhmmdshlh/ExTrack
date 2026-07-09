@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { previewFromCLI, getCLIPlaceholder } from '../utils/cliParser.js';
 import { formatRupiah } from '../utils/format.js';
 import { Send } from 'lucide-react';
 
 export default function SmartCLIInput({ template, categories, onSubmit }) {
+  const { t } = useTranslation();
   const toTitleCase = (str) =>
     str ? str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : '';
 
@@ -18,7 +20,7 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
 
     const parsed = previewFromCLI(input, template);
     if (!parsed.amount || !parsed.title || !parsed.category) {
-      setWarning(`Gunakan format: ${placeholder}`);
+      setWarning(t('cli.formatWarning', { format: placeholder }));
       return;
     }
     setWarning('');
@@ -73,17 +75,17 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
           </div>
           {preview.category && (
             <p className="mt-1 text-xs text-muted-foreground">
-              Kategori: {toTitleCase(preview.category)}
+              {t('cli.categoryLabel')} {toTitleCase(preview.category)}
             </p>
           )}
           {(preview.dateInput || preview.timeInput) && (
             <p className="text-xs text-muted-foreground">
-              Waktu: {preview.dateInput || '(hari ini)'} {preview.timeInput || ''}
+              {t('cli.timeLabel')} {preview.dateInput || t('cli.today')} {preview.timeInput || ''}
             </p>
           )}
           {preview.notes && (
             <p className="text-xs text-muted-foreground">
-              Catatan: {preview.notes}
+              {t('cli.notesLabel')} {preview.notes}
             </p>
           )}
         </div>

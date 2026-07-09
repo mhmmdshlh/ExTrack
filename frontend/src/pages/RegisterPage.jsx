@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore.js';
 import { Wallet } from 'lucide-react';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -18,12 +20,12 @@ export default function RegisterPage() {
     setPasswordError('');
 
     if (password.length < 6) {
-      setPasswordError('Password minimal 6 karakter');
+      setPasswordError(t('auth.passwordMinLength'));
       return;
     }
 
     if (password !== confirm) {
-      setLocalError('Password tidak cocok');
+      setLocalError(t('auth.passwordMismatch'));
       return;
     }
 
@@ -38,43 +40,43 @@ export default function RegisterPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary">
             <Wallet className="text-primary-foreground" size={24} />
           </div>
-          <h1 className="text-2xl font-bold">Buat Akun</h1>
+          <h1 className="text-2xl font-bold">{t('auth.registerTitle')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Daftar untuk mulai mencatat
+            {t('auth.registerSubtitle')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm font-medium">Email</label>
+            <label className="text-sm font-medium">{t('auth.email')}</label>
             <input
               type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); clearError(); }}
               className="mt-1 w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
               required
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Password</label>
+            <label className="text-sm font-medium">{t('auth.password')}</label>
             <input
               type="password"
               value={password}
               onChange={(e) => { setPassword(e.target.value); clearError(); }}
               className="mt-1 w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-              placeholder="Min. 6 karakter"
+              placeholder={t('auth.passwordPlaceholder')}
               required
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Konfirmasi Password</label>
+            <label className="text-sm font-medium">{t('auth.confirmPassword')}</label>
             <input
               type="password"
               value={confirm}
               onChange={(e) => { setConfirm(e.target.value); clearError(); }}
               className="mt-1 w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-              placeholder="Ulangi password"
+              placeholder={t('auth.confirmPasswordPlaceholder')}
               required
             />
           </div>
@@ -91,14 +93,14 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            {loading ? 'Memproses...' : 'Daftar'}
+            {loading ? t('auth.loading') : t('auth.register')}
           </button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Sudah punya akun?{' '}
+          {t('auth.hasAccount')}{' '}
           <Link to="/login" className="font-medium text-primary hover:underline">
-            Masuk
+            {t('auth.login')}
           </Link>
         </p>
       </div>

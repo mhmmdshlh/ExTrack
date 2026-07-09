@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TrendingDown, Plus } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useExpenses, useExpensesSummary, useCreateExpense, useDeleteExpense, useUpdateExpense } from '../hooks/useExpenses.js';
@@ -11,14 +12,6 @@ import QuickButton from '../components/QuickButton.jsx';
 import ConfirmModal from '../components/ConfirmModal.jsx';
 import Toast from '../components/Toast.jsx';
 
-const TIME_OPTIONS = [
-  { label: 'Hari Ini', value: 'today' },
-  { label: 'Minggu Ini', value: 'week' },
-  { label: 'Bulan Ini', value: 'month' },
-  { label: 'Tahun Ini', value: 'year' },
-  { label: 'Semua', value: 'all' },
-];
-
 const CHART_COLORS = [
   'var(--chart-1)',
   'var(--chart-2)',
@@ -28,7 +21,16 @@ const CHART_COLORS = [
 ];
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState(() => localStorage.getItem('dashboard_timeRange') || 'month');
+
+  const TIME_OPTIONS = [
+    { label: t('dashboard.timeOptions.today'), value: 'today' },
+    { label: t('dashboard.timeOptions.week'), value: 'week' },
+    { label: t('dashboard.timeOptions.month'), value: 'month' },
+    { label: t('dashboard.timeOptions.year'), value: 'year' },
+    { label: t('dashboard.timeOptions.all'), value: 'all' },
+  ];
 
   const updateTimeRange = (val) => {
     setTimeRange(val);
@@ -107,7 +109,7 @@ export default function DashboardPage() {
       return;
     }
     if (!data.category_id) {
-      setToast('Kategori diperlukan. Contoh: 6000 kopi minuman');
+      setToast(t('dashboard.categoryNeeded'));
       return;
     }
     try {
@@ -130,7 +132,7 @@ export default function DashboardPage() {
         notes: data.notes || null,
         ...(created_at && { created_at }),
       });
-      setToast('Pengeluaran berhasil dicatat');
+      setToast(t('dashboard.expenseCreated'));
     } catch {
       // error handled by query
     }
@@ -147,7 +149,7 @@ export default function DashboardPage() {
           category_id: cat.id,
           notes: newCategoryConfirm.notes || null,
         });
-        setToast('Pengeluaran berhasil dicatat');
+        setToast(t('dashboard.expenseCreated'));
       } catch {
         // error handled by query
       }
@@ -222,8 +224,8 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 lg:pb-6">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Ikhtisar pengeluaranmu</p>
+        <h1 className="text-2xl font-bold">{t('dashboard.title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('dashboard.subtitle')}</p>
       </header>
 
       <div className="mb-4 flex gap-2">
@@ -244,13 +246,13 @@ export default function DashboardPage() {
 
       {isError && (
         <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {queryError?.response?.data?.error || 'Gagal memuat data'}
+          {queryError?.response?.data?.error || t('dashboard.error')}
         </div>
       )}
 
       {isLoading && (
         <div className="mb-4 text-center text-sm text-muted-foreground">
-          Memuat data...
+          {t('dashboard.loading')}
         </div>
       )}
 
@@ -258,14 +260,14 @@ export default function DashboardPage() {
         <div className="mb-6 rounded-2xl bg-primary p-5 text-primary-foreground lg:mb-0 lg:w-1/3 lg:self-start">
           <div className="flex items-center gap-2 text-sm opacity-80">
             <TrendingDown size={16} />
-            <span>Total Pengeluaran</span>
+            <span>{t('dashboard.total')}</span>
           </div>
           <p className="mt-1 text-3xl font-bold">{formatRupiah(total)}</p>
         </div>
 
         {chartData.length > 0 && (
           <div className="mb-6 rounded-xl border bg-card p-4 lg:mb-0 lg:w-2/3">
-            <h2 className="mb-3 text-sm font-semibold">Per Kategori</h2>
+            <h2 className="mb-3 text-sm font-semibold">{t('dashboard.perCategory')}</h2>
             <ResponsiveContainer width="100%" height={180}>
               <PieChart>
                 <Pie
@@ -333,19 +335,19 @@ export default function DashboardPage() {
               className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed py-3 text-sm text-muted-foreground transition-colors hover:bg-accent"
             >
               <Plus size={16} />
-              Form Lengkap
+              {t('dashboard.formButton')}
             </button>
           </>
         )}
 
         {showForm && (
           <form onSubmit={handleFormSubmit} className="space-y-3 rounded-xl border bg-card p-4">
-            <h3 className="text-sm font-semibold">Form Pengeluaran</h3>
+            <h3 className="text-sm font-semibold">{t('dashboard.formTitle')}</h3>
             <input
               type="text"
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
-              placeholder="Nama pengeluaran"
+              placeholder={t('dashboard.namePlaceholder')}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
               required
             />
@@ -353,7 +355,7 @@ export default function DashboardPage() {
               type="text"
               value={formAmount}
               onChange={(e) => setFormAmount(e.target.value.replace(/\D/g, ''))}
-              placeholder="Nominal (Rp)"
+              placeholder={t('dashboard.amountPlaceholder')}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
               required
             />
@@ -362,7 +364,7 @@ export default function DashboardPage() {
                 type="text"
                 value={formCategory}
                 onChange={(e) => setFormCategory(e.target.value)}
-                placeholder="Kategori"
+                placeholder={t('dashboard.categoryPlaceholder')}
                 list="category-list"
                 className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
                 required
@@ -376,7 +378,7 @@ export default function DashboardPage() {
             <textarea
               value={formNotes}
               onChange={(e) => setFormNotes(e.target.value)}
-              placeholder="Catatan (opsional)"
+              placeholder={t('dashboard.notesPlaceholder')}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
               rows={2}
             />
@@ -400,14 +402,14 @@ export default function DashboardPage() {
                 type="submit"
                 className="flex-1 rounded-lg bg-primary py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
               >
-                Simpan
+                {t('dashboard.save')}
               </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
                 className="rounded-lg border px-4 py-2 text-sm text-muted-foreground hover:bg-accent"
               >
-                Batal
+                {t('dashboard.cancel')}
               </button>
             </div>
           </form>
@@ -416,7 +418,7 @@ export default function DashboardPage() {
 
       <div className="space-y-3">
         <h2 className="text-sm font-semibold text-muted-foreground">
-          Transaksi Terbaru
+          {t('dashboard.recent')}
         </h2>
         <ExpenseList
         expenses={recentExpenses}
@@ -427,30 +429,30 @@ export default function DashboardPage() {
 
       <ConfirmModal
         open={!!newCategoryConfirm}
-        title="Kategori Baru"
-        message={`Kategori "${newCategoryConfirm?.categoryInput}" belum ada. Buat sekarang?`}
-        confirmLabel="Buat & Simpan"
+        title={t('dashboard.newCategoryTitle')}
+        message={t('dashboard.newCategoryMessage', { name: newCategoryConfirm?.categoryInput })}
+        confirmLabel={t('dashboard.confirmCreate')}
         onConfirm={handleConfirmCategory}
         onCancel={() => setNewCategoryConfirm(null)}
       />
 
       <ConfirmModal
         open={!!pendingQuickBtn}
-        title="Kategori Baru"
-        message={`Kategori "${pendingQuickBtn?.category}" belum ada. Buat sekarang?`}
-        confirmLabel="Buat & Simpan"
+        title={t('dashboard.newCategoryTitle')}
+        message={t('dashboard.newCategoryMessage', { name: pendingQuickBtn?.category })}
+        confirmLabel={t('dashboard.confirmCreate')}
         onConfirm={handleConfirmQuickCategory}
         onCancel={() => setPendingQuickBtn(null)}
       />
 
       <ConfirmModal
         open={!!deleteConfirm}
-        title="Hapus Pengeluaran"
-        message="Hapus pengeluaran ini?"
+        title={t('dashboard.deleteConfirmTitle')}
+        message={t('dashboard.deleteConfirmMessage')}
         onConfirm={async () => {
           await deleteExpenseMutation.mutateAsync(deleteConfirm);
           setDeleteConfirm(null);
-          setToast('Pengeluaran berhasil dihapus');
+          setToast(t('dashboard.expenseDeleted'));
         }}
         onCancel={() => setDeleteConfirm(null)}
       />

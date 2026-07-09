@@ -1,0 +1,153 @@
+{
+  "app": {
+    "name": "ExTrack",
+    "tagline": "Lacak pengeluaranmu dengan mudah"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "history": "Riwayat",
+    "settings": "Pengaturan"
+  },
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Min. 6 karakter",
+    "confirmPassword": "Konfirmasi Password",
+    "confirmPasswordPlaceholder": "Ulangi password",
+    "login": "Masuk",
+    "register": "Daftar",
+    "loading": "Memproses...",
+    "noAccount": "Belum punya akun?",
+    "hasAccount": "Sudah punya akun?",
+    "registerTitle": "Buat Akun",
+    "registerSubtitle": "Daftar untuk mulai mencatat",
+    "passwordMinLength": "Password minimal 6 karakter",
+    "passwordMismatch": "Password tidak cocok"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Ikhtisar pengeluaranmu",
+    "total": "Total Pengeluaran",
+    "perCategory": "Per Kategori",
+    "recent": "Transaksi Terbaru",
+    "loading": "Memuat data...",
+    "error": "Gagal memuat data",
+    "formTitle": "Form Pengeluaran",
+    "formButton": "Form Lengkap",
+    "namePlaceholder": "Nama pengeluaran",
+    "amountPlaceholder": "Nominal (Rp)",
+    "categoryPlaceholder": "Kategori",
+    "notesPlaceholder": "Catatan (opsional)",
+    "datePlaceholder": "dd/mm/yyyy",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "expenseCreated": "Pengeluaran berhasil dicatat",
+    "expenseDeleted": "Pengeluaran berhasil dihapus",
+    "deleteConfirmTitle": "Hapus Pengeluaran",
+    "deleteConfirmMessage": "Hapus pengeluaran ini?",
+    "categoryNeeded": "Kategori diperlukan. Contoh: 6000 kopi minuman",
+    "newCategoryTitle": "Kategori Baru",
+    "newCategoryMessage": "Kategori \"{{name}}\" belum ada. Buat sekarang?",
+    "confirmCreate": "Buat & Simpan",
+    "timeOptions": {
+      "today": "Hari Ini",
+      "week": "Minggu Ini",
+      "month": "Bulan Ini",
+      "year": "Tahun Ini",
+      "all": "Semua"
+    }
+  },
+  "history": {
+    "title": "Riwayat",
+    "search": "Cari pengeluaran...",
+    "loadingMore": "Memuat lebih banyak...",
+    "allLoaded": "Semua data telah dimuat",
+    "deleteConfirmTitle": "Hapus Pengeluaran",
+    "deleteConfirmMessage": "Hapus pengeluaran ini?",
+    "timeOptions": {
+      "all": "Semua Waktu",
+      "today": "Hari Ini",
+      "week": "7 Hari",
+      "month": "Bulan Ini",
+      "year": "Tahun Ini"
+    },
+    "categoryAll": "Semua Kategori",
+    "sortOptions": [
+      "Terbaru",
+      "Terlama",
+      "Tertinggi",
+      "Terendah",
+      "A-Z",
+      "Z-A",
+      "A-Z Kategori",
+      "Z-A Kategori"
+    ],
+    "export": {
+      "csv": "CSV",
+      "txt": "TXT",
+      "xlsx": "XLSX"
+    }
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "accountSubtitle": "Akun kamu",
+    "logout": "Keluar",
+    "appearance": "Tampilan",
+    "darkMode": "Mode Gelap",
+    "language": "Bahasa",
+    "cliTemplate": "Smart CLI Template",
+    "quickButtons": "Quick Buttons (max 6)",
+    "add": "Tambah",
+    "label": "Label",
+    "amount": "Rp",
+    "category": "Kategori",
+    "customCategories": "Kategori Custom",
+    "noCustomCategories": "Belum ada kategori custom",
+    "expense": "pengeluaran",
+    "expenses": "pengeluaran",
+    "newCategoryPlaceholder": "Nama kategori",
+    "categoryCreated": "Kategori berhasil dibuat",
+    "categoryUpdated": "Kategori berhasil diubah",
+    "categoryDeleted": "Kategori berhasil dihapus",
+    "deleteCategoryTitle": "Hapus Kategori",
+    "deleteCategoryMessage": "Hapus kategori \"{{name}}\"?",
+    "save": "Simpan Pengaturan",
+    "saved": "Pengaturan berhasil disimpan",
+    "saveFailed": "Gagal menyimpan pengaturan"
+  },
+  "cli": {
+    "formatWarning": "Gunakan format: {{format}}",
+    "categoryLabel": "Kategori:",
+    "timeLabel": "Waktu:",
+    "today": "(hari ini)",
+    "notesLabel": "Catatan:"
+  },
+  "confirm": {
+    "yes": "Ya",
+    "cancel": "Batal"
+  },
+  "export": {
+    "filename": "extrack-export-",
+    "csv": ".csv",
+    "xlsx": ".xlsx",
+    "csvHeaders": ["Title", "Amount", "Category", "Notes", "Date"],
+    "txtLabels": {
+      "title": "Judul: ",
+      "amount": "Jumlah: ",
+      "category": "Kategori: ",
+      "date": "Tanggal: "
+    },
+    "xlsxHeaders": ["Title", "Amount", "Category", "Notes", "Date"],
+    "sheetName": "Expenses"
+  },
+  "template": {
+    "option1": "{amount} {title} {category}",
+    "option2": "{category} {amount} {title}",
+    "option3": "{title} {amount} {category}"
+  },
+  "tooltip": {
+    "filter": "Filter",
+    "export": "Export"
+  }
+}

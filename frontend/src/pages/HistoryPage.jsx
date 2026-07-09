@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Download, Filter, FileDown } from 'lucide-react';
 import { useExpensesInfinite, useUpdateExpense, useDeleteExpense } from '../hooks/useExpenses.js';
 import { useCategories } from '../hooks/useCategories.js';
@@ -10,18 +11,8 @@ import * as XLSX from 'xlsx';
 
 const PAGE_SIZE = 20;
 
-const SORT_OPTIONS = [
-  { label: 'Terbaru', sortBy: 'date', sortOrder: 'desc' },
-  { label: 'Terlama', sortBy: 'date', sortOrder: 'asc' },
-  { label: 'Tertinggi', sortBy: 'amount', sortOrder: 'desc' },
-  { label: 'Terendah', sortBy: 'amount', sortOrder: 'asc' },
-  { label: 'A-Z', sortBy: 'title', sortOrder: 'asc' },
-  { label: 'Z-A', sortBy: 'title', sortOrder: 'desc' },
-  { label: 'A-Z Kategori', sortBy: 'category', sortOrder: 'asc' },
-  { label: 'Z-A Kategori', sortBy: 'category', sortOrder: 'desc' },
-];
-
 export default function HistoryPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -31,6 +22,17 @@ export default function HistoryPage() {
   const [sortOption, setSortOption] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const exportMenuRef = useRef(null);
+
+  const SORT_OPTIONS = useMemo(() => [
+    { label: t('history.sortOptions.0'), sortBy: 'date', sortOrder: 'desc' },
+    { label: t('history.sortOptions.1'), sortBy: 'date', sortOrder: 'asc' },
+    { label: t('history.sortOptions.2'), sortBy: 'amount', sortOrder: 'desc' },
+    { label: t('history.sortOptions.3'), sortBy: 'amount', sortOrder: 'asc' },
+    { label: t('history.sortOptions.4'), sortBy: 'title', sortOrder: 'asc' },
+    { label: t('history.sortOptions.5'), sortBy: 'title', sortOrder: 'desc' },
+    { label: t('history.sortOptions.6'), sortBy: 'category', sortOrder: 'asc' },
+    { label: t('history.sortOptions.7'), sortBy: 'category', sortOrder: 'desc' },
+  ], [t]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -60,7 +62,7 @@ export default function HistoryPage() {
     p.sortBy = opt.sortBy;
     p.sortOrder = opt.sortOrder;
     return p;
-  }, [debouncedSearch, categoryFilter, timeFilter, sortOption]);
+  }, [debouncedSearch, categoryFilter, timeFilter, sortOption, SORT_OPTIONS]);
 
   const {
     data,
@@ -92,7 +94,7 @@ export default function HistoryPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `extrack-export-${Date.now()}.${ext}`;
+        a.download = `${t('export.filename')}${Date.now()}.${ext}`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -111,26 +113,26 @@ export default function HistoryPage() {
           `"${e.notes || ''}"`,
           formatDate(e.created_at),
         ]);
-        const headers = ['Title', 'Amount', 'Category', 'Notes', 'Date'];
+        const headers = [t('export.csvHeaders.0'), t('export.csvHeaders.1'), t('export.csvHeaders.2'), t('export.csvHeaders.3'), t('export.csvHeaders.4')];
         const csv = [headers.join(','), ...csvRows.map(r => r.join(','))].join('\n');
         downloadBlob(csv, 'text/csv;charset=utf-8;', 'csv');
       } else if (format === 'txt') {
         const txt = rows.map((e) =>
-          `Judul: ${e.title}\nJumlah: ${formatRupiah(e.amount)}\nKategori: ${e.category_name}\nTanggal: ${formatDate(e.created_at)}\n`
+          `${t('export.txtLabels.title')}${e.title}\n${t('export.txtLabels.amount')}${formatRupiah(e.amount)}\n${t('export.txtLabels.category')}${e.category_name}\n${t('export.txtLabels.date')}${formatDate(e.created_at)}\n`
         ).join('\n');
         downloadBlob(txt, 'text/plain;charset=utf-8;', 'txt');
       } else if (format === 'xlsx') {
         const data = rows.map((e) => ({
-          Title: e.title,
-          Amount: e.amount,
-          Category: e.category_name,
-          Notes: e.notes || '',
-          Date: formatDate(e.created_at),
+          [t('export.csvHeaders.0')]: e.title,
+          [t('export.csvHeaders.1')]: e.amount,
+          [t('export.csvHeaders.2')]: e.category_name,
+          [t('export.csvHeaders.3')]: e.notes || '',
+          [t('export.csvHeaders.4')]: formatDate(e.created_at),
         }));
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-        XLSX.writeFile(wb, `extrack-export-${Date.now()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, t('export.sheetName'));
+        XLSX.writeFile(wb, `${t('export.filename')}${Date.now()}.xlsx`);
       }
     } catch {
       // export failed silently
@@ -169,7 +171,7 @@ export default function HistoryPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 pb-20 pt-4 lg:pb-6">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">Riwayat</h1>
+        <h1 className="text-xl font-bold">{t('history.title')}</h1>
         <div className="flex gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -191,21 +193,21 @@ export default function HistoryPage() {
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                 >
                   <FileDown size={14} />
-                  CSV
+                  {t('history.export.csv')}
                 </button>
                 <button
                   onClick={() => handleExport('txt')}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                 >
                   <FileDown size={14} />
-                  TXT
+                  {t('history.export.txt')}
                 </button>
                 <button
                   onClick={() => handleExport('xlsx')}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                 >
                   <FileDown size={14} />
-                  XLSX
+                  {t('history.export.xlsx')}
                 </button>
               </div>
             )}
@@ -219,7 +221,7 @@ export default function HistoryPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Cari pengeluaran..."
+          placeholder={t('history.search')}
           className="w-full rounded-xl border bg-background py-2.5 pl-10 pr-4 text-sm outline-none ring-ring focus:ring-2"
         />
       </div>
@@ -231,18 +233,18 @@ export default function HistoryPage() {
             onChange={(e) => setTimeFilter(e.target.value)}
             className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
           >
-            <option value="all">Semua Waktu</option>
-            <option value="today">Hari Ini</option>
-            <option value="week">7 Hari</option>
-            <option value="month">Bulan Ini</option>
-            <option value="year">Tahun Ini</option>
+            <option value="all">{t('history.timeOptions.all')}</option>
+            <option value="today">{t('history.timeOptions.today')}</option>
+            <option value="week">{t('history.timeOptions.week')}</option>
+            <option value="month">{t('history.timeOptions.month')}</option>
+            <option value="year">{t('history.timeOptions.year')}</option>
           </select>
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
           >
-            <option value="">Semua Kategori</option>
+            <option value="">{t('history.categoryAll')}</option>
             {categories?.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -269,7 +271,7 @@ export default function HistoryPage() {
 
       {isFetchingNextPage && (
         <p className="py-4 text-center text-sm text-muted-foreground">
-          Memuat lebih banyak...
+          {t('history.loadingMore')}
         </p>
       )}
 
@@ -277,14 +279,14 @@ export default function HistoryPage() {
 
       {!hasNextPage && allExpenses.length > 0 && (
         <p className="py-4 text-center text-xs text-muted-foreground">
-          Semua data telah dimuat
+          {t('history.allLoaded')}
         </p>
       )}
 
       <ConfirmModal
         open={!!deleteConfirm}
-        title="Hapus Pengeluaran"
-        message="Hapus pengeluaran ini?"
+        title={t('history.deleteConfirmTitle')}
+        message={t('history.deleteConfirmMessage')}
         onConfirm={async () => {
           await deleteExpenseMutation.mutateAsync(deleteConfirm);
           setDeleteConfirm(null);

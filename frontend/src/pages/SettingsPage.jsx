@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Sun,
   Moon,
@@ -26,6 +27,7 @@ const TEMPLATE_OPTIONS = [
 ];
 
 export default function SettingsPage() {
+  const { t, i18n } = useTranslation();
   const { user, logout } = useAuthStore();
   const { data: settings } = useSettings();
   const { data: categories = [] } = useCategories();
@@ -70,9 +72,9 @@ export default function SettingsPage() {
         cli_template: template,
         quick_buttons: quickButtons,
       });
-      setToast('Pengaturan berhasil disimpan');
+      setToast(t('settings.saved'));
     } catch {
-      setToast('Gagal menyimpan pengaturan');
+      setToast(t('settings.saveFailed'));
     }
   };
 
@@ -112,25 +114,25 @@ export default function SettingsPage() {
     await createCategoryMutation.mutateAsync(newCatName.trim());
     setShowNewCat(false);
     setNewCatName('');
-    setToast('Kategori berhasil dibuat');
+    setToast(t('settings.categoryCreated'));
   };
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-24 pt-4 lg:pb-6">
-      <h1 className="mb-6 text-xl font-bold">Pengaturan</h1>
+      <h1 className="mb-6 text-xl font-bold">{t('settings.title')}</h1>
 
       <div className="mb-6 rounded-xl border bg-card p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">{user?.email}</p>
-            <p className="text-xs text-muted-foreground">Akun kamu</p>
+            <p className="text-xs text-muted-foreground">{t('settings.accountSubtitle')}</p>
           </div>
           <button
             onClick={handleLogout}
             className="flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm text-destructive hover:bg-accent"
           >
             <LogOut size={14} />
-            Keluar
+            {t('settings.logout')}
           </button>
         </div>
       </div>
@@ -138,7 +140,7 @@ export default function SettingsPage() {
       <div className="mb-6 space-y-4">
         <h2 className="flex items-center gap-2 text-sm font-semibold">
           <Sliders size={16} />
-          Tampilan
+          {t('settings.appearance')}
         </h2>
         <button
           onClick={toggleDark}
@@ -146,7 +148,7 @@ export default function SettingsPage() {
         >
           <div className="flex items-center gap-3">
             {darkMode ? <Moon size={18} /> : <Sun size={18} />}
-            <span className="text-sm">Mode Gelap</span>
+            <span className="text-sm">{t('settings.darkMode')}</span>
           </div>
           <div
             className={`h-5 w-9 rounded-full transition-colors ${
@@ -164,8 +166,23 @@ export default function SettingsPage() {
 
       <div className="mb-6 space-y-4">
         <h2 className="flex items-center gap-2 text-sm font-semibold">
+          <Sliders size={16} />
+          {t('settings.language')}
+        </h2>
+        <select
+          value={i18n.language}
+          onChange={(e) => i18n.changeLanguage(e.target.value)}
+          className="w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none ring-ring focus:ring-2"
+        >
+          <option value="id">Bahasa Indonesia</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div className="mb-6 space-y-4">
+        <h2 className="flex items-center gap-2 text-sm font-semibold">
           <Key size={16} />
-          Smart CLI Template
+          {t('settings.cliTemplate')}
         </h2>
         <select
           value={template}
@@ -184,7 +201,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             <GripVertical size={16} />
-            Quick Buttons (max 6)
+            {t('settings.quickButtons')}
           </h2>
           {quickButtons.length < 6 && (
             <button
@@ -192,7 +209,7 @@ export default function SettingsPage() {
               className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
             >
               <Plus size={14} />
-              Tambah
+              {t('settings.add')}
             </button>
           )}
         </div>
@@ -207,7 +224,7 @@ export default function SettingsPage() {
               type="text"
               value={btn.label}
               onChange={(e) => updateQuickButton(idx, 'label', e.target.value)}
-              placeholder="Label"
+              placeholder={t('settings.label')}
               className="min-w-0 flex-1 rounded-md border bg-background px-2 py-1 text-sm outline-none"
             />
             <input
@@ -216,7 +233,7 @@ export default function SettingsPage() {
               onChange={(e) =>
                 updateQuickButton(idx, 'amount', e.target.value.replace(/\D/g, ''))
               }
-              placeholder="Rp"
+              placeholder={t('settings.amount')}
               className="w-20 rounded-md border bg-background px-2 py-1 text-sm text-right outline-none"
             />
             <select
@@ -241,14 +258,14 @@ export default function SettingsPage() {
       <div className="mb-6 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
-            Kategori Custom
+            {t('settings.customCategories')}
           </h2>
           <button
             onClick={() => setShowNewCat(true)}
             className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
           >
             <Plus size={14} />
-            Tambah
+            {t('settings.add')}
           </button>
         </div>
 
@@ -259,7 +276,7 @@ export default function SettingsPage() {
               value={newCatName}
               onChange={(e) => setNewCatName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCreateCategory()}
-              placeholder="Nama kategori"
+              placeholder={t('settings.newCategoryPlaceholder')}
               className="flex-1 rounded-md border bg-background px-2 py-1 text-sm outline-none"
               autoFocus
             />
@@ -282,7 +299,7 @@ export default function SettingsPage() {
         )}
 
         {customCategories.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Belum ada kategori custom</p>
+          <p className="text-sm text-muted-foreground">{t('settings.noCustomCategories')}</p>
         ) : (
           customCategories.map((cat) => (
             <div
@@ -302,7 +319,7 @@ export default function SettingsPage() {
                     onClick={async () => {
                       await updateCategoryMutation.mutateAsync({ id: cat.id, name: editCatName });
                       setEditingCat(null);
-                      setToast('Kategori berhasil diubah');
+                      setToast(t('settings.categoryUpdated'));
                     }}
                     className="rounded p-1 text-green-600 hover:bg-accent"
                   >
@@ -320,7 +337,7 @@ export default function SettingsPage() {
                   <div className="flex items-center gap-2">
                     <span className="text-sm">{cat.name}</span>
                     {cat.expense_count > 0 && (
-                      <span className="text-xs text-muted-foreground">({cat.expense_count} expense)</span>
+                      <span className="text-xs text-muted-foreground">({cat.expense_count} {cat.expense_count > 1 ? t('settings.expenses') : t('settings.expense')})</span>
                     )}
                   </div>
                   <div className="flex gap-1">
@@ -353,18 +370,18 @@ export default function SettingsPage() {
         onClick={handleSave}
         className="w-full rounded-xl bg-primary py-3 text-sm font-medium text-primary-foreground hover:opacity-90"
       >
-        Simpan Pengaturan
+        {t('settings.save')}
       </button>
 
       <ConfirmModal
         open={!!deleteCatConfirm}
-        title="Hapus Kategori"
-        message={`Hapus kategori "${deleteCatConfirm?.name}"?`}
+        title={t('settings.deleteCategoryTitle')}
+        message={t('settings.deleteCategoryMessage', { name: deleteCatConfirm?.name })}
         onConfirm={async () => {
           if (!deleteCatConfirm) return;
           await deleteCategoryMutation.mutateAsync(deleteCatConfirm.id);
           setDeleteCatConfirm(null);
-          setToast('Kategori berhasil dihapus');
+          setToast(t('settings.categoryDeleted'));
         }}
         onCancel={() => setDeleteCatConfirm(null)}
       />

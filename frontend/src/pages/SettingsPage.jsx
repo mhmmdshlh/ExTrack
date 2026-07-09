@@ -51,6 +51,7 @@ export default function SettingsPage() {
   });
 
   const initRef = useRef(false);
+  const saveTimerRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -66,17 +67,17 @@ export default function SettingsPage() {
     }
   }, [settings]);
 
-  const handleSave = async () => {
-    try {
-      await updateSettingsMutation.mutateAsync({
+  useEffect(() => {
+    if (!initRef.current) return;
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      updateSettingsMutation.mutateAsync({
         cli_template: template,
         quick_buttons: quickButtons,
       });
-      setToast(t('settings.saved'));
-    } catch {
-      setToast(t('settings.saveFailed'));
-    }
-  };
+    }, 500);
+    return () => clearTimeout(saveTimerRef.current);
+  }, [template, quickButtons, updateSettingsMutation]);
 
   const toggleDark = () => {
     const next = !darkMode;
@@ -171,7 +172,13 @@ export default function SettingsPage() {
         </h2>
         <select
           value={i18n.language}
-          onChange={(e) => i18n.changeLanguage(e.target.value)}
+          onChange={(e) => {
+            const lang = e.target.value;
+            i18n.changeLanguage(lang);
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', lang);
+            window.history.replaceState({}, '', url);
+          }}
           className="w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none ring-ring focus:ring-2"
         >
           <option value="id">Bahasa Indonesia</option>
@@ -365,13 +372,6 @@ export default function SettingsPage() {
           ))
         )}
       </div>
-
-      <button
-        onClick={handleSave}
-        className="w-full rounded-xl bg-primary py-3 text-sm font-medium text-primary-foreground hover:opacity-90"
-      >
-        {t('settings.save')}
-      </button>
 
       <ConfirmModal
         open={!!deleteCatConfirm}

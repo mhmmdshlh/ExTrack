@@ -121,7 +121,10 @@
     "categoryLabel": "Kategori:",
     "timeLabel": "Waktu:",
     "today": "(hari ini)",
-    "notesLabel": "Catatan:"
+    "notesLabel": "Catatan:",
+    "placeholderAmount": "15000",
+    "placeholderTitle": "nasi goreng",
+    "placeholderCategory": "makanan"
   },
   "confirm": {
     "yes": "Ya",

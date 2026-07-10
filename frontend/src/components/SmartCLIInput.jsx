@@ -12,7 +12,12 @@ export default function SmartCLIInput({ template, categories, onSubmit }) {
   const [input, setInput] = useState('');
   const [warning, setWarning] = useState('');
   const preview = previewFromCLI(input, template);
-  const placeholder = getCLIPlaceholder(template);
+  const placeholder = getCLIPlaceholder(template, {
+    amount: t('cli.placeholderAmount'),
+    title: t('cli.placeholderTitle'),
+    category: t('cli.placeholderCategory'),
+    notes: t('cli.placeholderNotes'),
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();

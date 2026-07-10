@@ -121,7 +121,10 @@
     "categoryLabel": "Category:",
     "timeLabel": "Time:",
     "today": "(today)",
-    "notesLabel": "Notes:"
+    "notesLabel": "Notes:",
+    "placeholderAmount": "15000",
+    "placeholderTitle": "fried rice",
+    "placeholderCategory": "food"
   },
   "confirm": {
     "yes": "Yes",

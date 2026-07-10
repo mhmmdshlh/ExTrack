@@ -91,12 +91,13 @@ const PLACEHOLDER_SAMPLES = {
   notes: 'catatan',
 };
 
-export function getCLIPlaceholder(template) {
-  if (!template) return '15000 nasi goreng makanan';
+export function getCLIPlaceholder(template, samples) {
+  const s = samples || PLACEHOLDER_SAMPLES;
+  if (!template) return `${s.amount} ${s.title} ${s.category}`;
   const parts = template.split(/\s+/);
   const sample = parts.map((p) => {
     const key = TEMPLATE_ORDER[p];
-    return PLACEHOLDER_SAMPLES[key] || p;
+    return s[key] || p;
   });
   return sample.join(' ');
 }

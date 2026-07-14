@@ -4,6 +4,10 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import id from './locales/id.json' with { type: 'json' };
 import en from './locales/en.json' with { type: 'json' };
 
+if (!localStorage.getItem('language')) {
+  localStorage.setItem('language', 'id');
+}
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)

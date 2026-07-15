@@ -89,12 +89,25 @@ export default function HistoryPage() {
     setDeleteConfirm(id);
   }, []);
 
-  const downloadBlob = (content, mimeType, ext) => {
-    const blob = new Blob([content], { type: mimeType });
+  const saveFile = async (blob, suggestedName, mimeType, ext) => {
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName,
+          types: [{ accept: { [mimeType]: [`.${ext}`] } }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      } catch {
+        // user cancelled or unsupported — fallback
+      }
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-        a.download = `${t('export.filename')}${Date.now()}.${ext}`;
+    a.download = suggestedName;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -104,6 +117,7 @@ export default function HistoryPage() {
     try {
       const res = await expenseService.getExpenses(filterParams);
       const rows = res.data.expenses;
+      const now = Date.now();
 
       if (format === 'csv') {
         const csvRows = rows.map((e) => [
@@ -115,12 +129,14 @@ export default function HistoryPage() {
         ]);
         const headers = [t('export.csvHeaders.0'), t('export.csvHeaders.1'), t('export.csvHeaders.2'), t('export.csvHeaders.3'), t('export.csvHeaders.4')];
         const csv = [headers.join(','), ...csvRows.map(r => r.join(','))].join('\n');
-        downloadBlob(csv, 'text/csv;charset=utf-8;', 'csv');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        await saveFile(blob, `${t('export.filename')}${now}.csv`, 'text/csv', 'csv');
       } else if (format === 'txt') {
         const txt = rows.map((e) =>
           `${t('export.txtLabels.title')}${e.title}\n${t('export.txtLabels.amount')}${formatRupiah(e.amount)}\n${t('export.txtLabels.category')}${e.category_name}\n${t('export.txtLabels.date')}${formatDate(e.created_at)}\n`
         ).join('\n');
-        downloadBlob(txt, 'text/plain;charset=utf-8;', 'txt');
+        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8;' });
+        await saveFile(blob, `${t('export.filename')}${now}.txt`, 'text/plain', 'txt');
       } else if (format === 'xlsx') {
         const data = rows.map((e) => ({
           [t('export.csvHeaders.0')]: e.title,
@@ -132,7 +148,9 @@ export default function HistoryPage() {
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, t('export.sheetName'));
-        XLSX.writeFile(wb, `${t('export.filename')}${Date.now()}.xlsx`);
+        const buf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+        const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        await saveFile(blob, `${t('export.filename')}${now}.xlsx`, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx');
       }
     } catch {
       // export failed silently

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Download, Filter, FileDown } from 'lucide-react';
+import Toast from '../components/Toast.jsx';
 import { useExpensesInfinite, useUpdateExpense, useDeleteExpense } from '../hooks/useExpenses.js';
 import { useCategories } from '../hooks/useCategories.js';
 import ExpenseList from '../components/ExpenseList.jsx';
@@ -21,6 +22,7 @@ export default function HistoryPage() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [sortOption, setSortOption] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [toast, setToast] = useState('');
   const exportMenuRef = useRef(null);
 
   const SORT_OPTIONS = useMemo(() => [
@@ -100,8 +102,8 @@ export default function HistoryPage() {
         await writable.write(blob);
         await writable.close();
         return;
-      } catch {
-        // user cancelled or unsupported — fallback
+      } catch (err) {
+        if (err.name === 'AbortError') throw err;
       }
     }
     const url = URL.createObjectURL(blob);
@@ -152,8 +154,9 @@ export default function HistoryPage() {
         const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         await saveFile(blob, `${t('export.filename')}${now}.xlsx`, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx');
       }
-    } catch {
-      // export failed silently
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      setToast(t('export.error'));
     }
   };
 
@@ -311,6 +314,8 @@ export default function HistoryPage() {
         }}
         onCancel={() => setDeleteConfirm(null)}
       />
+
+      <Toast message={toast} onClose={() => setToast('')} />
     </div>
   );
 }

@@ -132,6 +132,7 @@
   },
   "export": {
     "filename": "extrack-export-",
+    "error": "Failed to export data",
     "csv": ".csv",
     "xlsx": ".xlsx",
     "csvHeaders": ["Title", "Amount", "Category", "Notes", "Date"],

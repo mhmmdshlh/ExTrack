@@ -23,6 +23,7 @@ export default function HistoryPage() {
   const [sortOption, setSortOption] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [toast, setToast] = useState('');
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const exportMenuRef = useRef(null);
 
   const SORT_OPTIONS = useMemo(() => [
@@ -45,7 +46,10 @@ export default function HistoryPage() {
     const p = {};
     if (debouncedSearch) p.search = debouncedSearch;
     if (categoryFilter) p.categoryId = categoryFilter;
-    if (timeFilter === 'today') {
+    if (dateRange.start && dateRange.end) {
+      p.startDate = new Date(dateRange.start + 'T00:00:00.000Z').toISOString();
+      p.endDate = new Date(dateRange.end + 'T23:59:59.999Z').toISOString();
+    } else if (timeFilter === 'today') {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       p.startDate = today.toISOString();
@@ -64,7 +68,7 @@ export default function HistoryPage() {
     p.sortBy = opt.sortBy;
     p.sortOrder = opt.sortOrder;
     return p;
-  }, [debouncedSearch, categoryFilter, timeFilter, sortOption, SORT_OPTIONS]);
+  }, [debouncedSearch, categoryFilter, timeFilter, sortOption, dateRange, SORT_OPTIONS]);
 
   const {
     data,
@@ -248,37 +252,59 @@ export default function HistoryPage() {
       </div>
 
       {showFilters && (
-        <div className="mb-4 flex gap-2">
-          <select
-            value={timeFilter}
-            onChange={(e) => setTimeFilter(e.target.value)}
-            className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
-          >
-            <option value="all">{t('history.timeOptions.all')}</option>
-            <option value="today">{t('history.timeOptions.today')}</option>
-            <option value="week">{t('history.timeOptions.week')}</option>
-            <option value="month">{t('history.timeOptions.month')}</option>
-            <option value="year">{t('history.timeOptions.year')}</option>
-          </select>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
-          >
-            <option value="">{t('history.categoryAll')}</option>
-            {categories?.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(Number(e.target.value))}
-            className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
-          >
-            {SORT_OPTIONS.map((opt, i) => (
-              <option key={i} value={i}>{opt.label}</option>
-            ))}
-          </select>
+        <div className="mb-4 space-y-2">
+          <div className="flex gap-2">
+            <select
+              value={timeFilter}
+              onChange={(e) => {
+                setTimeFilter(e.target.value);
+                setDateRange({ start: '', end: '' });
+              }}
+              className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
+            >
+              <option value="all">{t('history.timeOptions.all')}</option>
+              <option value="today">{t('history.timeOptions.today')}</option>
+              <option value="week">{t('history.timeOptions.week')}</option>
+              <option value="month">{t('history.timeOptions.month')}</option>
+              <option value="year">{t('history.timeOptions.year')}</option>
+            </select>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
+            >
+              <option value="">{t('history.categoryAll')}</option>
+              {categories?.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(Number(e.target.value))}
+              className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
+            >
+              {SORT_OPTIONS.map((opt, i) => (
+                <option key={i} value={i}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+          {timeFilter === 'all' && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={dateRange.start}
+                onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
+              />
+              <span className="text-muted-foreground">-</span>
+              <input
+                type="date"
+                value={dateRange.end}
+                onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm outline-none"
+              />
+            </div>
+          )}
         </div>
       )}
 

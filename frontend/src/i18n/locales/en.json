@@ -6,6 +6,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "history": "History",
+    "statistics": "Statistics",
     "settings": "Settings"
   },
   "auth": {
@@ -149,6 +150,25 @@
     "option1": "{amount} {title} {category}",
     "option2": "{category} {amount} {title}",
     "option3": "{title} {amount} {category}"
+  },
+  "statistics": {
+    "title": "Statistics",
+    "loading": "Loading data...",
+    "noData": "No data yet",
+    "totalSpent": "Total Spent",
+    "transactionCount": "Transactions",
+    "avgPerDay": "Avg per Day",
+    "largest": "Largest Expense",
+    "monthlyTrend": "Monthly Trend",
+    "perCategory": "Per Category",
+    "topExpenses": "Top Expenses",
+    "periodAll": "All Time",
+    "periodYear": "This Year",
+    "periodMonth": "This Month",
+    "periodWeek": "7 Days",
+    "vsLastMonth": "vs Last Month",
+    "thisPeriod": "This period",
+    "lastPeriod": "Last period"
   },
   "tooltip": {
     "filter": "Filter",

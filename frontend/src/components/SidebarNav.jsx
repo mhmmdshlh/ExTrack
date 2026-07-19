@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, History, Settings } from 'lucide-react';
+import { LayoutDashboard, History, BarChart3, Settings } from 'lucide-react';
 
 export default function SidebarNav() {
   const { t } = useTranslation();
   const tabs = [
     { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/statistics', label: t('nav.statistics'), icon: BarChart3 },
     { to: '/history', label: t('nav.history'), icon: History },
     { to: '/settings', label: t('nav.settings'), icon: Settings },
   ];

@@ -6,6 +6,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "history": "Riwayat",
+    "statistics": "Statistik",
     "settings": "Pengaturan"
   },
   "auth": {
@@ -149,6 +150,25 @@
     "option1": "{amount} {title} {category}",
     "option2": "{category} {amount} {title}",
     "option3": "{title} {amount} {category}"
+  },
+  "statistics": {
+    "title": "Statistik",
+    "loading": "Memuat data...",
+    "noData": "Belum ada data",
+    "totalSpent": "Total Pengeluaran",
+    "transactionCount": "Jumlah Transaksi",
+    "avgPerDay": "Rata-rata per Hari",
+    "largest": "Pengeluaran Terbesar",
+    "monthlyTrend": "Tren Bulanan",
+    "perCategory": "Per Kategori",
+    "topExpenses": "Pengeluaran Terbesar",
+    "periodAll": "Semua Waktu",
+    "periodYear": "Tahun Ini",
+    "periodMonth": "Bulan Ini",
+    "periodWeek": "7 Hari",
+    "vsLastMonth": "Dibanding Bulan Lalu",
+    "thisPeriod": "Periode ini",
+    "lastPeriod": "Periode lalu"
   },
   "tooltip": {
     "filter": "Filter",

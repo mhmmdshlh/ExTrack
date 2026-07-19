@@ -108,6 +108,40 @@ router.get('/summary', async (req, res) => {
   }
 });
 
+router.get('/trends', async (req, res) => {
+  try {
+    const { startDate, endDate, groupBy = 'month' } = req.query;
+    const interval = groupBy === 'week' ? 'week' : groupBy === 'day' ? 'day' : 'month';
+
+    let queryText = `
+      SELECT date_trunc($1, e.created_at) as period,
+             SUM(e.amount) as total,
+             COUNT(*) as count
+      FROM expenses e
+      WHERE e.user_id = $2
+    `;
+    const params = [interval, req.user.id];
+    let idx = 3;
+
+    if (startDate) {
+      queryText += ` AND e.created_at >= $${idx++}`;
+      params.push(startDate);
+    }
+    if (endDate) {
+      queryText += ` AND e.created_at <= $${idx++}`;
+      params.push(endDate);
+    }
+
+    queryText += ' GROUP BY period ORDER BY period';
+
+    const rows = await sql(queryText, params);
+    res.json(rows.map(r => ({ period: r.period, total: Number(r.total), count: Number(r.count) })));
+  } catch (error) {
+    console.error('Get trends error:', error);
+    res.status(500).json({ error: 'Failed to fetch trends' });
+  }
+});
+
 router.post('/', async (req, res) => {
   try {
     const { title, amount, category_id, notes, created_at } = req.body;

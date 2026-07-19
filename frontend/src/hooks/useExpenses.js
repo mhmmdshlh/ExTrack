@@ -58,6 +58,15 @@ export function useExpensesSummary(params = {}) {
   });
 }
 
+export function useExpensesTrends(params = {}) {
+  return useQuery({
+    queryKey: ['expenses', 'trends', params],
+    queryFn: ({ signal }) => expenseService.getExpensesTrends(params, signal),
+    select: (res) => res.data,
+    staleTime: 30_000,
+  });
+}
+
 export function useCreateExpense() {
   const queryClient = useQueryClient();
   return useMutation({

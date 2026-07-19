@@ -6,6 +6,9 @@ export const getExpenses = (params, signal) =>
 export const getExpensesSummary = (params, signal) =>
   api.get('/expenses/summary', { params, signal });
 
+export const getExpensesTrends = (params, signal) =>
+  api.get('/expenses/trends', { params, signal });
+
 export const createExpense = (data) =>
   api.post('/expenses', data);
 

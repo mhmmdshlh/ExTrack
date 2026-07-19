@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import HistoryPage from './pages/HistoryPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
+import StatisticsPage from './pages/StatisticsPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardPage /> },
           { path: 'history', element: <HistoryPage /> },
+          { path: 'statistics', element: <StatisticsPage /> },
           { path: 'settings', element: <SettingsPage /> },
         ],
       },

@@ -6,7 +6,7 @@ import {
 import { TrendingDown, TrendingUp, Receipt, CalendarDays, ArrowUpRight } from 'lucide-react';
 import { useExpensesSummary, useExpensesTrends, useExpenses } from '../hooks/useExpenses.js';
 import { formatRupiah, getStartOfYear } from '../utils/format.js';
-import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { format, startOfMonth, subMonths, subDays, subYears } from 'date-fns';
 import { id } from 'date-fns/locale';
 
 const PERIOD_OPTIONS = [
@@ -81,12 +81,13 @@ export default function StatisticsPage() {
   }, [summary, dateRange]);
 
   const comparison = useMemo(() => {
-    if (period === 'all') return null;
-    const thisStart = dateRange.startDate ? new Date(dateRange.startDate) : null;
-    if (!thisStart) return null;
-    const monthStart = startOfMonth(thisStart);
-    const lastStart = subMonths(monthStart, 1);
-    const lastEnd = subMonths(endOfMonth(thisStart), 1);
+    if (period === 'all' || !dateRange.startDate) return null;
+    const thisStart = new Date(dateRange.startDate);
+    const lastStart =
+      period === 'year' ? subYears(thisStart, 1) :
+      period === 'month' ? subMonths(thisStart, 1) :
+      subDays(thisStart, 7);
+    const lastEnd = subDays(thisStart, 1);
     return { thisStart, lastStart, lastEnd };
   }, [period, dateRange]);
 

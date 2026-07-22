@@ -41,11 +41,12 @@ export default function StatisticsPage() {
   const dateLocale = i18n.language === 'id' ? id : undefined;
 
   const [period, setPeriod] = useState('year');
+  const [daily, setDaily] = useState(false);
 
   const dateRange = useMemo(() => getDateRange(period), [period]);
 
   const summaryParams = useMemo(() => dateRange, [dateRange]);
-  const trendsParams = useMemo(() => ({ ...dateRange, groupBy: 'month' }), [dateRange]);
+  const trendsParams = useMemo(() => ({ ...dateRange, groupBy: daily ? 'day' : 'month' }), [dateRange, daily]);
   const topParams = useMemo(() => ({ ...dateRange, sortBy: 'amount', sortOrder: 'desc', limit: 5 }), [dateRange]);
 
   const { data: summary, isLoading: summaryLoading } = useExpensesSummary(summaryParams);
@@ -55,11 +56,13 @@ export default function StatisticsPage() {
   const chartData = useMemo(() => {
     if (!trends) return [];
     return trends.map((d) => ({
-      label: format(new Date(d.period), 'MMM', { locale: dateLocale }),
+      label: daily
+        ? format(new Date(d.period), 'd MMM', { locale: dateLocale })
+        : format(new Date(d.period), 'MMM', { locale: dateLocale }),
       total: d.total,
       count: d.count,
     }));
-  }, [trends, dateLocale]);
+  }, [trends, dateLocale, daily]);
 
   const categoryChartData = useMemo(() => {
     if (!summary?.categories) return [];
@@ -159,7 +162,17 @@ export default function StatisticsPage() {
           )}
 
           <div className="mb-6 rounded-xl border bg-card p-4">
-            <h2 className="mb-4 text-sm font-semibold">{t('statistics.monthlyTrend')}</h2>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-sm font-semibold">
+                {daily ? t('statistics.dailyTrend') : t('statistics.monthlyTrend')}
+              </h2>
+              <button
+                onClick={() => setDaily(d => !d)}
+                className="rounded-lg border px-3 py-1 text-xs font-medium hover:bg-accent"
+              >
+                {daily ? t('statistics.monthly') : t('statistics.daily')}
+              </button>
+            </div>
             {trendsLoading ? (
               <p className="text-sm text-muted-foreground">{t('statistics.loading')}</p>
             ) : chartData.length === 0 ? (

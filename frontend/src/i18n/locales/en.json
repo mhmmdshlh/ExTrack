@@ -113,6 +113,8 @@
     "categoryDeleted": "Category deleted successfully",
     "deleteCategoryTitle": "Delete Category",
     "deleteCategoryMessage": "Delete category \"{{name}}\"?",
+    "logoutConfirmTitle": "Logout",
+    "logoutConfirmMessage": "Are you sure you want to logout?",
     "save": "Save Settings",
     "saved": "Settings saved successfully",
     "saveFailed": "Failed to save settings"

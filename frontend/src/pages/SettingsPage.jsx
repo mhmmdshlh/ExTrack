@@ -44,6 +44,7 @@ export default function SettingsPage() {
   const [showNewCat, setShowNewCat] = useState(false);
   const [newCatName, setNewCatName] = useState('');
   const [deleteCatConfirm, setDeleteCatConfirm] = useState(null);
+  const [logoutConfirm, setLogoutConfirm] = useState(false);
   const [toast, setToast] = useState('');
   const [darkMode, setDarkMode] = useState(() => {
     const stored = localStorage.getItem('darkMode');
@@ -129,7 +130,7 @@ export default function SettingsPage() {
             <p className="text-xs text-muted-foreground">{t('settings.accountSubtitle')}</p>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={() => setLogoutConfirm(true)}
             className="flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm text-destructive hover:bg-accent"
           >
             <LogOut size={14} />
@@ -372,6 +373,15 @@ export default function SettingsPage() {
           ))
         )}
       </div>
+
+      <ConfirmModal
+        open={logoutConfirm}
+        title={t('settings.logoutConfirmTitle')}
+        message={t('settings.logoutConfirmMessage')}
+        confirmLabel={t('settings.logout')}
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutConfirm(false)}
+      />
 
       <ConfirmModal
         open={!!deleteCatConfirm}

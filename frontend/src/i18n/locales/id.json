@@ -113,6 +113,8 @@
     "categoryDeleted": "Kategori berhasil dihapus",
     "deleteCategoryTitle": "Hapus Kategori",
     "deleteCategoryMessage": "Hapus kategori \"{{name}}\"?",
+    "logoutConfirmTitle": "Keluar",
+    "logoutConfirmMessage": "Yakin ingin keluar?",
     "save": "Simpan Pengaturan",
     "saved": "Pengaturan berhasil disimpan",
     "saveFailed": "Gagal menyimpan pengaturan"

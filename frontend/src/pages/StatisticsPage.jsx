@@ -119,7 +119,14 @@ export default function StatisticsPage() {
       </div>
 
       {summaryLoading ? (
-        <p className="text-sm text-muted-foreground">{t('statistics.loading')}</p>
+        <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="animate-pulse rounded-xl border bg-card p-4">
+              <div className="mb-3 h-3 w-20 rounded bg-muted" />
+              <div className="h-6 w-28 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
       ) : (
         <>
           <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -174,7 +181,14 @@ export default function StatisticsPage() {
               </button>
             </div>
             {trendsLoading ? (
-              <p className="text-sm text-muted-foreground">{t('statistics.loading')}</p>
+              <div className="animate-pulse space-y-3">
+                <div className="h-[200px] w-full rounded-lg bg-muted" />
+                <div className="flex justify-between">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-3 w-8 rounded bg-muted" />
+                  ))}
+                </div>
+              </div>
             ) : chartData.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t('statistics.noData')}</p>
             ) : (
@@ -220,7 +234,20 @@ export default function StatisticsPage() {
           <div className="rounded-xl border bg-card p-4">
             <h2 className="mb-3 text-sm font-semibold">{t('statistics.topExpenses')}</h2>
             {topLoading ? (
-              <p className="text-sm text-muted-foreground">{t('statistics.loading')}</p>
+              <div className="animate-pulse space-y-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2">
+                    <div className="flex items-center gap-3">
+                      <div className="h-4 w-6 rounded bg-muted" />
+                      <div className="space-y-1">
+                        <div className="h-3 w-32 rounded bg-muted" />
+                        <div className="h-2 w-16 rounded bg-muted" />
+                      </div>
+                    </div>
+                    <div className="h-4 w-20 rounded bg-muted" />
+                  </div>
+                ))}
+              </div>
             ) : topExpenses.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t('statistics.noData')}</p>
             ) : (
